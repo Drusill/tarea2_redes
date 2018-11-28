@@ -41,7 +41,8 @@ while bol:
                 print("Connecting, waiting for response")
                 try:
                     data=connection.recv(buff)
-                    if data:
+                    flag, ack=data.split("|||")
+                    if int(flag)==1:
                         print(data)
                         bol=False
                         break
@@ -66,6 +67,7 @@ while intentos:
             if len(data)+len(escribir)>GranBuffer:
                 sended_file.write(escribir)
                 sended_file.write(data)
+                print("escribiendo")
                 escribir=""
         
             escribir=escribir+data
