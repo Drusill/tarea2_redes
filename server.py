@@ -52,7 +52,7 @@ while bol:
                         sys.exit()
                     tries+=1
 
-last_ack=0
+last_ack=ACK
 intentos=0
 while intentos<10:
     try:
@@ -76,6 +76,7 @@ while intentos<10:
             connection.sendto(msg_ack,address)
             intentos=0
     except:
+
         connection.sendto(msg_ack,address)
         intentos+=1
                 
