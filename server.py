@@ -76,7 +76,7 @@ while intentos<10:
             connection.sendto(msg_ack,address)
             intentos=0
     except:
-
+        msg_ack=str(ACK_Flag)+"|||"+str(last_ack)
         connection.sendto(msg_ack,address)
         intentos+=1
                 
