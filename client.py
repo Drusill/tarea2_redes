@@ -73,7 +73,7 @@ if try_connection == 5:
 
 # Confirmacion de recepcion 
 ACK = 1
-data = str(ACK) + "|||" + str(ACK_Flag)
+data = str(ACK_Flag) + "|||" + str(ACK)
 connection.sendto(data, address)
 print ("Connection established")
 
@@ -87,7 +87,7 @@ while True:
             break
 
         data += "|||" + str(seq_actual)
-        window[last_added] = data
+        window.append(data)
         connection.sendto(data, address) 
         if last_added == 0:
             connection.settimeout(0.5)  
@@ -109,7 +109,7 @@ while True:
     except:
         for data in window:
             connection.sendto(data, address)
-            
+
 connection.close()
 file_toSend.close()
 """
