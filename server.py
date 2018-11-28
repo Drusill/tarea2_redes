@@ -54,7 +54,7 @@ while bol:
 
 last_ack=0
 intentos=0
-while intentos:
+while intentos<10:
     try:
         msg, address= connection.recvfrom(buff)
         connection.settimeout(0.5)
