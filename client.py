@@ -78,22 +78,38 @@ connection.sendto(data, address)
 print ("Connection established")
 
 # enviar archivo
+try_counter = 0
+last_added = 0
 while True:
-    data = file_toSend.read(buff-1)
-    if not data:
-        break
-    data += str(seq_actual)
-    window[seq_actual]=data
-    connection.sendto(data, address)
-    seq_actual = (int(seq_actual) + 1) % int(seq_number)
+    while last_added < window_Size:
+        data = file_toSend.read(buff-1)
+        if not data:
+            break
 
-
+        data += "|||" + str(seq_actual)
+        window[last_added] = data
+        connection.sendto(data, address) 
+        if last_added == 0:
+            connection.settimeout(0.5)  
+        seq_actual = (int(seq_actual) + 1) % int(seq_number)
+        last_added += 1
+    
     try:
-
-
-
-
-
+        data, address = connection.recvfrom(buff)
+        (ACK_Flag, ACK) = data.split("|||")
+        if str(ACK_Flag) == "1":
+            for data in window:
+                seq_window = data.split("|||")[1]
+                if int(seq_window) == int(ACK):
+                    index_acked = window.index(data) + 1
+                    window = window[index_acked:]
+                    last_added = window_Size - index_acked
+                    connection.settimeout(0.5)
+                    break       
+    except:
+        for data in window:
+            connection.sendto(data, address)
+            
 connection.close()
 file_toSend.close()
 """
