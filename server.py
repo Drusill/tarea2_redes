@@ -13,7 +13,8 @@ ip = ""
 port = int(sys.argv[1])
 connection = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
 connection.bind((ip, port))
-
+GranBuffer=10000
+escribir=""
 # Parámetros
 buff = 1024
 ACK = 0
@@ -32,10 +33,11 @@ while bol:
             ACK_Flag = 1
             ACK = (int(seq_number_cl) + 1) % int(seq_max)
             data = str(SYN) + "|||" + str(ACK_Flag) + "|||" + str(ACK)
-            while True: 
+            tries=0
+            while tries<=5: 
                 connection.sendto(data, address)
 
-                connection.settimeout(0.5)
+                connection.settimeout(0.3)
                 print("Connecting, waiting for response")
                 try:
                     data=connection.recv(buff)
@@ -44,8 +46,21 @@ while bol:
                         bol=False
                         break
                 except:
-                    print("reenviando SYN ACK")
-    
+                    if tries==5:
+                        print("imposibru")
+                        sys.exit()
+                    tries+=1
+
+while True:
+    data, address= connection.recvfrom(buff)
+    if len(data)+len(escribir)>GranBuffer:
+        sended_file.write(escribir)
+        sended_file.write(data)
+        escribir=""
+    else:
+        escribir=escribir+data
+        
+
 
 """
 seq_number_sv = (seq_number_sv + 1) % seq_max

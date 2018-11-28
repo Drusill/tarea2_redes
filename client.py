@@ -24,9 +24,9 @@ current_size = 0
 buff = 1024
 window_Size = 10
 window = []
-seq_max = 2*window_Size 
-seq_number = random.randint(0, seq_max)
-print("seq_number: " + str(seq_number))
+seq_number = 2*window_Size 
+seq_actual = random.randint(0, seq_number)
+print("seq_actual: " + str(seq_actual))
 
 """
 i = 0
@@ -39,7 +39,7 @@ while i < window_Size:
 # Header
 
 SYN = 1
-data = str(filename) + "|||" + str(size_file) + "|||" + str(SYN) + "|||" + str(seq_max) + "|||" + str(seq_number) 
+data = str(filename) + "|||" + str(size_file) + "|||" + str(SYN) + "|||" + str(seq_number) + "|||" + str(seq_actual) 
 
 
 #   
@@ -48,25 +48,24 @@ try_connection = 0
 print ("Establishing connection with " + str(address))
 while try_connection < 5:
     connection.sendto(data, address)
-    seq_number = (int(seq_number) + 1) % int(seq_max)
+    seq_actual = (int(seq_actual) + 1) % int(seq_number)
     connection.settimeout(0.5)
     try:
         if try_connection == 5:
             break
 
-        data, adress = connection.recvfrom(buff)
-        print(data)
+        received, adress = connection.recvfrom(buff)
+        print(received)
 
-        (SYN, ACK_Flag, ACK) = data.split("|||")
-        if str(SYN) == "1" and str(ACK_Flag) == "1" and str(seq_number) == str(ACK):
+        (SYN, ACK_Flag, ACK) = received.split("|||")
+        if str(SYN) == "1" and str(ACK_Flag) == "1" and str(seq_actual) == str(ACK):
             file_toSend = open(filename, "rb")
-            print ("Connection established")
             break
     except:
         print(try_connection)
         try_connection += 1
         print ("timed out")
-        connection.sendto(data, address)
+        connection.sendto(received, address)
 
 if try_connection == 5:
     print ("Couldnt establish connection")
@@ -76,21 +75,39 @@ if try_connection == 5:
 ACK = 1
 data = str(ACK) + "|||" + str(ACK_Flag)
 connection.sendto(data, address)
+print ("Connection established")
+
+# enviar archivo
+while True:
+    data = file_toSend.read(buff-1)
+    if not data:
+        break
+    data += str(seq_actual)
+    window[seq_actual]=data
+    connection.sendto(data, address)
+    seq_actual = (int(seq_actual) + 1) % int(seq_number)
+
+
+    try:
+
+
+
 
 
 connection.close()
 file_toSend.close()
 """
 file_toSend = open(filename, "rb")
-ACK = (ACK + 1) % seq_max
+ACK = (ACK + 1) % seq_number
 data = file_toSend.read(buff-1) + "|||" + str(ACK) + "|||" + 
-        str(ACK_Flag) + "|||" str(seq_number)
+        str(ACK_Flag) + "|||" str(seq_actual)
 current_size += len(data)
 
 try_connection = 0
 while True:
     connection.sendto(data, address)
-    seq_number = (seq_number + 1) % seq_max
+    seq_actual = (seq_actual + 1) % seq_number
+
     connection.settimeout(0.5)
 """
 
