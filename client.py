@@ -72,12 +72,13 @@ if try_connection == 5:
     sys.exit()
 
 # Confirmacion de recepcion 
-ACK = 1
 data = str(ACK_Flag) + "|||" + str(ACK)
 connection.sendto(data, address)
 print ("Connection established")
 
 # enviar archivo
+print(ACK)
+print(seq_actual)
 try_counter = 0
 last_added = 0
 while True:

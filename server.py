@@ -54,10 +54,12 @@ while bol:
 
 last_ack=ACK
 intentos=0
+print(ACK)
 while intentos<10:
+    print("hola")
     try:
         msg, address= connection.recvfrom(buff)
-        connection.settimeout(0.5)
+        connection.settimeout(1)
         data, ACK =msg.split("|||")
         print(data)
         if last_ack!=int(ACK):
