@@ -37,7 +37,7 @@ while bol:
             while tries<=5: 
                 connection.sendto(data, address)
 
-                connection.settimeout(0.3)
+                connection.settimeout(0.5)
                 print("Connecting, waiting for response")
                 try:
                     data=connection.recv(buff)
@@ -51,15 +51,33 @@ while bol:
                         sys.exit()
                     tries+=1
 
-while True:
-    data, address= connection.recvfrom(buff)
-    if len(data)+len(escribir)>GranBuffer:
-        sended_file.write(escribir)
-        sended_file.write(data)
-        escribir=""
-    else:
-        escribir=escribir+data
+last_ack=0
+intentos=0
+while intentos:
+    try:
+        msg, address= connection.recvfrom(buff)
+        connection.settimeout(0.5)
+        data, ACK =msg.split("|||")
+        if last_ack!=int(ACK)+1:
+
+            msg_ack=str(ACK_Flag)+"|||"+str(last_ack)
+            connection.sendto(msg_ack,address)
+        else:            
+            if len(data)+len(escribir)>GranBuffer:
+                sended_file.write(escribir)
+                sended_file.write(data)
+                escribir=""
         
+            escribir=escribir+data
+            last_ack=int(ACK)+1 % int(seq_max)
+            msg_ack=str(ACK_Flag)+"|||"+str(last_ack)
+            connection.sendto(msg_ack,address)
+            intentos=0
+    except:
+        connection.sendto(msg_ack,address)
+        intentos+=1
+                
+
 
 
 """
