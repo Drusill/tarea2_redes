@@ -59,6 +59,7 @@ while intentos<10:
         msg, address= connection.recvfrom(buff)
         connection.settimeout(0.5)
         data, ACK =msg.split("|||")
+        print(data)
         if last_ack!=int(ACK)+1:
 
             msg_ack=str(ACK_Flag)+"|||"+str(last_ack)
@@ -69,7 +70,7 @@ while intentos<10:
                 sended_file.write(data)
                 print("escribiendo")
                 escribir=""
-        
+            
             escribir=escribir+data
             last_ack=int(ACK)+1 % int(seq_max)
             msg_ack=str(ACK_Flag)+"|||"+str(last_ack)
