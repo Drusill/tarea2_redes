@@ -60,7 +60,7 @@ while intentos<10:
         connection.settimeout(0.5)
         data, ACK =msg.split("|||")
         print(data)
-        if last_ack!=int(ACK)+1:
+        if last_ack!=int(ACK):
 
             msg_ack=str(ACK_Flag)+"|||"+str(last_ack)
             connection.sendto(msg_ack,address)
