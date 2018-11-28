@@ -14,9 +14,11 @@ connection = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
 # Parámetros
 ip_Server = sys.argv[1]
 port_Server = int(sys.argv[2])
+address = (ip_Server, port_Server)
+
 filename = sys.argv[3]
 size_file = os.path.getsize(filename)
-address = (ip_Server, port_Server)
+current_size = 0
 
 # Ventana y tamaño de paquete
 buff = 1024
@@ -38,24 +40,45 @@ data = str(filename) + "|||" + str(size_file) + "|||" + str(SYN) +
          "|||" + str(seq_max) + "|||" + str(seq_number) 
 
 
-# file_toSend = open(filename, "rb")
+# 
+
+try_connection = 0
+while True:
+    connection.sendto(data, address)
+    seq_number = (seq_number + 1) % seq_max
+    print ("Establishing connection with " + str(address))
+    connection.settimeout(0.5)
+    try:
+        if try_connection == 5:
+            print ("Cannot establish connection; " + str(try_connection) + "° attempt")
+            break
+
+        data, adress = connection.recvfrom(buff)
+
+        (SYN, ACK_Flag, ACK, seq_number) = data.split("|||")
+        if str(SYN) == "1" and STR(ACK_Flag) == str(seq_number) and str(seq_number) = str(ACK):
+            file_toSend = open(filename, "rb")
+            print ("Connection established")
+            break
+    except:
+        try_connection += 1
+        print ("timed out")
+        connection.sendto(data, address)
+
+if try_connection == 5:
+    print ("Couldnt establish connection")
+    sys.exit()
+
+file_toSend = open(filename, "rb")
+ACK = (ACK + 1) % seq_max
+data = file_toSend.read(buff-1) + "|||" + str(ACK) + "|||" + 
+        str(ACK_Flag) + "|||" str(seq_number)
+current_size += len(data)
 
 try_connection = 0
 while True:
     connection.sendto(data, address)
     seq_number = (seq_number + 1) % seq_max
     connection.settimeout(0.5)
-    try:
-        if try_connection == 5:
-            print "Cannot establish connection"
-            break
+    
 
-        data, adress = connection.recvfrom(buff)
-
-        if not data:
-            break
-
-        (SYN, ACK_Flag, ACK, seq_number) = data.split("|||")
-        if str(SYN) == "1" and STR(ACK_Flag) == str(seq_number) and str(seq_number) = str(ACK):
-            file_toSend = open(filename, "rb")
-            data = 

@@ -23,16 +23,24 @@ percent = round(0,2)
 can_recieve = True
 
 while True:
-    packet, address = connection.recvfrom(buff)
-    if packet:
+    data, address = connection.recvfrom(buff)
+    if data:
         (filename, size_file, SYN, seq_max, seq_number_cl) = packet.split("|||")
 
         if str(SYS) == "1":
             sended_file = open("file_"+filename, "wb", )
-            print("Connecting, waiting for response")
             ACK_Flag = 1
             ACK = (seq_number_cl + 1) % seq_max
             data = str(SYN) + "|||" + str(ACK_Flag) 
                     + "|||" + str(ACK) + "|||" + str(seq_number_sv)
-                
             connection.sendto(data, address)
+            print("Connecting, waiting for response")
+            break
+
+seq_number_sv = (seq_number_sv + 1) % seq_max
+try:
+    data, address = connection.recvfrom(buff)
+
+    if data:
+        
+
