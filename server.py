@@ -25,22 +25,22 @@ can_recieve = True
 while True:
     data, address = connection.recvfrom(buff)
     if data:
-        (filename, size_file, SYN, seq_max, seq_number_cl) = packet.split("|||")
+        (filename, size_file, SYN, seq_max, seq_number_cl) = data.split("|||")
 
-        if str(SYS) == "1":
+        if str(SYN) == "1":
             sended_file = open("file_"+filename, "wb", )
             ACK_Flag = 1
-            ACK = (seq_number_cl + 1) % seq_max
-            data = str(SYN) + "|||" + str(ACK_Flag) 
-                    + "|||" + str(ACK) + "|||" + str(seq_number_sv)
+            ACK = (int(seq_number_cl) + 1) % int(seq_max)
+            data = str(SYN) + "|||" + str(ACK_Flag) + "|||" + str(ACK)
             connection.sendto(data, address)
             print("Connecting, waiting for response")
             break
 
+"""
 seq_number_sv = (seq_number_sv + 1) % seq_max
 try:
     data, address = connection.recvfrom(buff)
 
     if data:
-        
+"""
 
