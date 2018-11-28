@@ -72,6 +72,11 @@ if try_connection == 5:
     print ("Couldnt establish connection")
     sys.exit()
 
+# Confirmacion de recepcion 
+ACK = 1
+data = str(ACK) + "|||" + str(ACK_Flag)
+connection.sendto(data, address)
+
 
 connection.close()
 file_toSend.close()

@@ -21,8 +21,8 @@ seq_number_sv = random.randint(0, 100)
 current_size = 0
 percent = round(0,2)
 can_recieve = True
-
-while True:
+bol=True
+while bol:
     data, address = connection.recvfrom(buff)
     if data:
         (filename, size_file, SYN, seq_max, seq_number_cl) = data.split("|||")
@@ -32,9 +32,20 @@ while True:
             ACK_Flag = 1
             ACK = (int(seq_number_cl) + 1) % int(seq_max)
             data = str(SYN) + "|||" + str(ACK_Flag) + "|||" + str(ACK)
-            connection.sendto(data, address)
-            print("Connecting, waiting for response")
-            break
+            while True: 
+                connection.sendto(data, address)
+
+                connection.settimeout(0.5)
+                print("Connecting, waiting for response")
+                try:
+                    data=connection.recv(buff)
+                    if data:
+                        print(data)
+                        bol=False
+                        break
+                except:
+                    print("reenviando SYN ACK")
+    
 
 """
 seq_number_sv = (seq_number_sv + 1) % seq_max
